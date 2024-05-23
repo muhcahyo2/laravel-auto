@@ -1,4 +1,3 @@
-site/
 !site/main
 /.phpunit.cache
 /node_modules
