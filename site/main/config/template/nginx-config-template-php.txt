@@ -5,7 +5,7 @@ server {
 
     http2 on;
 
-    set                 $base /var/www/_subdomain;
+    set                 $base /var/www/html/_subdomain;
     root                $base/public;
 
     # SSL
