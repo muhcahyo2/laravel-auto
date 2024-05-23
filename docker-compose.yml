@@ -1,0 +1,69 @@
+services:
+  nginx:
+    build: 
+      context: .
+      dockerfile: ./dockerfiles/nginx.dockerfile
+    container_name: nginx
+    depends_on:
+      - php
+    # uncomment the following line if you want to run this in a production environment
+    # restart: always
+    volumes:
+      - $PWD/site:/var/www/html
+      - $PWD/site/main/storage/webserver:/etc/nginx/sites-extra
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+      # - 443:443/udp
+    # comment the following line in production, it allows to have nice human-readable logs in dev
+    tty: true
+    networks:
+      - lab
+
+  php:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/php.dockerfile
+    container_name: php-fpm
+    networks:
+      - lab
+    tty: true
+    volumes:
+      - $PWD/site:/var/www/html
+      - /$XDG_RUNTIME_DIR/docker.sock:/var/run/docker.sock
+    depends_on:
+      - db
+
+  db:
+    # image: mariadb:lts
+    container_name: mariadb
+    build:
+      context: .
+      dockerfile: ./dockerfiles/mariadb.dockerfile
+    volumes:
+      - mariadb:/var/lib/mysql:Z
+    environment:
+      - MARIADB_ROOT_PASSWORD=my-secret-pw
+      - MARIADB_DATABASE=lab
+    ports:
+      - 3306:3306
+    networks:
+      - lab
+
+  phpmyadmin:
+    image: phpmyadmin:fpm-alpine
+    container_name: phpmyadmin
+    environment:
+     - PMA_ARBITRARY=1
+     - PMA_HOST=db
+    restart: always
+    ports:
+     - 8081:80
+
+networks:
+  lab:
+    driver: bridge
+
+volumes:
+  mariadb:
