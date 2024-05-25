@@ -46,8 +46,8 @@ services:
     environment:
       - MARIADB_ROOT_PASSWORD=my-secret-pw
       - MARIADB_DATABASE=lab
-    ports:
-      - 3306:3306
+    expose:
+      - "3306"
     networks:
       - lab
 
